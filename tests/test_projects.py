@@ -1,12 +1,19 @@
 import pytest
 
+from models import Project
 from projects import add_project, find_projects, get_project
+
+
+def test_project_object_and_string():
+    project = Project(1, "Task Planner", "Учебный проект")
+    assert project.id == 1
+    assert str(project) == "Task Planner - Учебный проект"
 
 
 def test_add_and_find_project():
     projects = []
     created = add_project(projects, "Task Planner", "Учебный проект")
-    assert created["id"] == 1
+    assert created.id == 1
     assert find_projects(projects, "planner") == [created]
 
 

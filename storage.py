@@ -1,12 +1,9 @@
-"""Загрузка и сохранение данных Task Planner в JSON."""
+"""Загрузка и сохранение объектов Task Planner в JSON."""
 
 import json
 from pathlib import Path
-from typing import TypeVar
 
 from models import Project, Task
-
-JsonRecord = TypeVar("JsonRecord", Project, Task)
 
 
 def load_records(path: Path) -> list[dict]:
@@ -23,21 +20,22 @@ def load_records(path: Path) -> list[dict]:
     return data
 
 
-def save_records(path: Path, records: list[JsonRecord]) -> None:
-    """Сохранить список записей, автоматически создав каталог."""
+def save_records(path: Path, records: list[Project | Task | dict]) -> None:
+    """Преобразовать объекты в словари и сохранить их в JSON."""
     path.parent.mkdir(parents=True, exist_ok=True)
+    data = [item if isinstance(item, dict) else item.to_dict() for item in records]
     try:
         with path.open("w", encoding="utf-8") as file:
-            json.dump(records, file, ensure_ascii=False, indent=2)
+            json.dump(data, file, ensure_ascii=False, indent=2)
     except OSError as error:
         raise ValueError(f"Не удалось сохранить данные в {path}") from error
 
 
 def load_projects(path: Path) -> list[Project]:
-    """Загрузить проекты."""
-    return [Project(**record) for record in load_records(path)]
+    """Загрузить проекты как объекты Project."""
+    return [Project.from_data(record) for record in load_records(path)]
 
 
-def load_tasks(path: Path) -> list[Task]:
-    """Загрузить задачи."""
-    return [Task(**record) for record in load_records(path)]
+def load_tasks(path: Path, projects: list[Project]) -> list[Task]:
+    """Загрузить задачи и восстановить связи с проектами."""
+    return [Task.from_data(record, projects) for record in load_records(path)]

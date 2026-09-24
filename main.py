@@ -1,6 +1,5 @@
 """Консольное приложение для планирования задач разработки."""
 
-from datetime import date
 from pathlib import Path
 
 from models import Project, Task
@@ -11,8 +10,6 @@ from tasks import (
     create_task,
     filter_tasks_by_status,
     find_tasks,
-    get_status,
-    get_urgency,
     iter_upcoming_tasks,
     sort_tasks_by_urgency,
     task_statistics,
@@ -31,7 +28,7 @@ def show_projects(projects: list[Project]) -> None:
         print("Проектов пока нет.")
         return
     for project in projects:
-        print(f'{project["id"]}. {project["name"]} — {project["description"]}')
+        print(f"{project.id}. {project}")
 
 
 def show_tasks(tasks: list[Task], projects: list[Project]) -> None:
@@ -40,17 +37,7 @@ def show_tasks(tasks: list[Task], projects: list[Project]) -> None:
         print("Задач пока нет.")
         return
     for task in tasks:
-        project = get_project(projects, task["project_id"])
-        deadline = date.fromisoformat(task["deadline"])
-        days_left = (deadline - date.today()).days
-        assignee = task["assignee"] or "не назначен"
-        print(
-            f'#{task["id"]} [{get_status(task["progress"])}] '
-            f'{task["title"]} | проект: {project["name"]} | '
-            f'исполнитель: {assignee} | прогресс: {task["progress"]}% | '
-            f'дедлайн: {deadline:%d.%m.%Y} | '
-            f'срочность: {get_urgency(task["priority"], days_left)}'
-        )
+        print(f"{task} | срочность: {task.urgency()}")
 
 
 def print_menu() -> None:
@@ -74,7 +61,7 @@ def main() -> None:
     """Запустить цикл консольного интерфейса."""
     try:
         projects = load_projects(PROJECTS_FILE)
-        tasks = load_tasks(TASKS_FILE)
+        tasks = load_tasks(TASKS_FILE, projects)
     except ValueError as error:
         print(f"Ошибка загрузки: {error}")
         return
@@ -95,23 +82,23 @@ def main() -> None:
                     input("Описание: "),
                 )
                 save_records(PROJECTS_FILE, projects)
-                print(f'Проект «{project["name"]}» добавлен.')
+                print(f'Проект «{project.name}» добавлен.')
             elif choice == 3:
                 show_tasks(tasks, projects)
             elif choice == 4:
                 show_projects(projects)
                 project_id = input_int("ID проекта: ", 1, 1_000_000)
-                get_project(projects, project_id)
+                project = get_project(projects, project_id)
                 task = create_task(
                     tasks,
-                    project_id,
+                    project,
                     input("Название задачи: "),
                     input_date("Дедлайн (ДД.ММ.ГГГГ): "),
                     input_int("Приоритет (1-5): ", 1, 5),
                     input("Описание: "),
                 )
                 save_records(TASKS_FILE, tasks)
-                print(f'Задача «{task["title"]}» добавлена.')
+                print(f'Задача «{task.title}» добавлена.')
             elif choice == 5:
                 show_tasks(find_tasks(tasks, input("Поисковый запрос: ")), projects)
             elif choice == 6:
@@ -122,7 +109,7 @@ def main() -> None:
                     input("Роль (developer/tester/teamlead): "),
                 )
                 save_records(TASKS_FILE, tasks)
-                print(f'Исполнитель назначен на задачу «{task["title"]}».')
+                print(f'Исполнитель назначен на задачу «{task.title}».')
             elif choice == 7:
                 task = update_progress(
                     tasks,
@@ -130,7 +117,7 @@ def main() -> None:
                     input_int("Прогресс (0-100): ", 0, 100),
                 )
                 save_records(TASKS_FILE, tasks)
-                print(f'Новый статус: {get_status(task["progress"])}.')
+                print(f"Новый статус: {task.status}.")
             elif choice == 8:
                 status = input("Статус (Новая/В работе/Завершена): ")
                 show_tasks(filter_tasks_by_status(tasks, status), projects)
