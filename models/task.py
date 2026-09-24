@@ -1,56 +1,10 @@
-"""Объектная модель проекта Development Task Planner."""
+"""Модель задачи разработки."""
 
 from datetime import date
 from typing import Optional
 
-
-class Project:
-    """Проект разработки, объединяющий связанные задачи."""
-
-    def __init__(self, project_id: int, name: str, description: str = ""):
-        self.id = project_id
-        self.name = name
-        self.description = description
-
-    def __str__(self) -> str:
-        return f"{self.name} - {self.description}" if self.description else self.name
-
-    def to_dict(self) -> dict:
-        """Подготовить данные проекта для сохранения в JSON."""
-        return {
-            "id": self.id,
-            "name": self.name,
-            "description": self.description,
-        }
-
-    @classmethod
-    def from_data(cls, data: dict) -> "Project":
-        """Создать проект из данных JSON."""
-        return cls(data["id"], data["name"], data.get("description", ""))
-
-
-class User:
-    """Исполнитель задачи."""
-
-    VALID_ROLES = {"developer", "tester", "teamlead"}
-
-    def __init__(self, name: str, role: str):
-        clean_name = name.strip()
-        clean_role = role.strip().lower()
-        if not clean_name:
-            raise ValueError("Имя исполнителя не может быть пустым")
-        if not self.is_valid_role(clean_role):
-            raise ValueError("Роль должна быть developer, tester или teamlead")
-        self.name = clean_name
-        self.role = clean_role
-
-    def __str__(self) -> str:
-        return f"{self.name} ({self.role})"
-
-    @staticmethod
-    def is_valid_role(role: str) -> bool:
-        """Проверить допустимость роли."""
-        return role.strip().lower() in User.VALID_ROLES
+from .project import Project
+from .user import User
 
 
 class Task:

@@ -38,7 +38,11 @@ Task -> User (если исполнитель назначен)
 ```text
 development-task-planner/
 ├── main.py              # меню приложения
-├── models.py            # классы Project, User и Task
+├── models/              # классы предметной области
+│   ├── __init__.py      # общий импорт классов
+│   ├── project.py       # класс Project
+│   ├── user.py          # класс User
+│   └── task.py          # класс Task
 ├── projects.py          # операции с коллекцией проектов
 ├── tasks.py             # операции с коллекцией задач
 ├── storage.py           # преобразование объектов и JSON
