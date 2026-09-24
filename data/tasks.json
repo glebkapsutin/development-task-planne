@@ -1,0 +1,24 @@
+[
+  {
+    "id": 1,
+    "project_id": 1,
+    "title": "Реализовать API для списка задач",
+    "description": "Подготовить базовые операции для задач",
+    "priority": 4,
+    "progress": 30,
+    "assignee": "Иванов И.И.",
+    "assignee_role": "developer",
+    "deadline": "2026-09-30"
+  },
+  {
+    "id": 2,
+    "project_id": 1,
+    "title": "Добавить автоматические тесты",
+    "description": "Проверить бизнес-логику приложения",
+    "priority": 5,
+    "progress": 0,
+    "assignee": "",
+    "assignee_role": "",
+    "deadline": "2026-10-05"
+  }
+]

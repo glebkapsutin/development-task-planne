@@ -1,18 +1,7 @@
-# Виртуальное окружение
-venv/
-env/
-ENV/
-
-# Кэш Python
 __pycache__/
 *.py[cod]
-*$py.class
-
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# Переменные окружения
-.env
+.pytest_cache/
+.venv/
+venv/
+output/
+tmp/
